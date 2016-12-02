@@ -2,7 +2,7 @@
 
 
 ## 1. 编辑excel文件 ##
-在sample.xlsx文件中，新建一个名称为员工表的sheet，它的内容如下：
+在sample.xlsx文件中，新建一个名称为员工表的sheet，它的内容如下：  
 ![](http://i.imgur.com/hLjn5Nz.png)
 
 ## 2. 配置excel2sql.properties ##
@@ -30,8 +30,7 @@
 
 
 ## 5. 查看执行结果 ##
-A. 查看数据库表的变化
-
+A. 查看数据库表的变化  
 ![](http://i.imgur.com/jNdIA4r.png)
 
 B. 查看控制台的输出
