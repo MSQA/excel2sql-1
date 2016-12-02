@@ -24,7 +24,7 @@ public class SqlGenRun {
 	}
 
 	private static void execute(Configuration configuration) throws IOException, InvalidFormatException {
-		String fileName = configuration.getString("excel.dir");
+		String fileName = configuration.getString("excel.filename");
 		File file = FileUtil.getFile(fileName);
 
 		String[] sheetNames = configuration.getStringArray("sheet.names");
@@ -34,7 +34,7 @@ public class SqlGenRun {
 
 		String script = excel.combineSql(tables);
 
-		boolean saveFile = configuration.getBoolean("generate.script", true);
+		boolean saveFile = configuration.getBoolean("save.script", true);
 		String scriptFileName = configuration.getString("script.filename");
 		if (saveFile) {
 			excel.saveScript(scriptFileName, script, saveFile);
