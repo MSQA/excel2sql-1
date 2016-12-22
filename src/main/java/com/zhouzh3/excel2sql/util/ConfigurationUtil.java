@@ -11,6 +11,9 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
+import com.zhouzh3.excel2sql.model.Constants;
+import com.zhouzh3.excel2sql.model.Context;
+
 public class ConfigurationUtil {
 
 	private ConfigurationUtil() {
@@ -39,5 +42,31 @@ public class ConfigurationUtil {
 		properties.setEncoding("UTF-8");
 		properties.setURL(FileUtil.getResource(fileName));
 		return properties;
+	}
+
+	public static Context getContext(Configuration configuration) {
+		Context context = new Context();
+		// 需要刷新的表
+		context.setExcelFile(FileUtil.getFile(configuration.getString("excel.file")));
+		String line = configuration.getString("sheet.names");
+		if (!StringUtil.isBlank(line)) {
+			context.setSheetNames(line.trim().split("[, ]+"));
+		} else {
+			context.setSheetNames(new String[0]);
+		}
+
+		// 是否保存脚本
+		context.setScriptSave(configuration.getBoolean("script.save", true));
+		context.setScriptFile(configuration.getString("script.file"));
+
+		// 是否执行脚本
+		context.setExecuteSql(configuration.getBoolean("execute.sql", true));
+
+		return context;
+	}
+
+	public static Context getContext() {
+		Configuration configuration = buildConfiguration(Constants.FILE_EXCEL2SQL);
+		return getContext(configuration);
 	}
 }

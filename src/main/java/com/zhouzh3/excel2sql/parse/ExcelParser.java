@@ -3,8 +3,8 @@ package com.zhouzh3.excel2sql.parse;
 import java.io.File;
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFCell;
@@ -14,6 +14,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import com.zhouzh3.excel2sql.model.Column;
 import com.zhouzh3.excel2sql.model.Constants;
+import com.zhouzh3.excel2sql.model.Context;
 import com.zhouzh3.excel2sql.model.Table;
 import com.zhouzh3.excel2sql.util.FileUtil;
 import com.zhouzh3.excel2sql.util.SqlScriptRunner;
@@ -21,7 +22,8 @@ import com.zhouzh3.excel2sql.util.StringUtil;
 
 public class ExcelParser {
 
-	public List<Table> xlsx2table(File xlsxPath, String... sheetNames) throws IOException, InvalidFormatException {
+	public Map<String, Table> xlsx2table(File xlsxPath, String... sheetNames)
+			throws IOException, InvalidFormatException {
 		XSSFWorkbook workbook = null;
 		try {
 			workbook = new XSSFWorkbook(xlsxPath);
@@ -44,21 +46,21 @@ public class ExcelParser {
 
 	}
 
-	protected List<Table> xlsx2table(XSSFWorkbook workbook, String... sheetNames) {
-		List<Table> retVal = new ArrayList<>();
+	protected Map<String, Table> xlsx2table(XSSFWorkbook workbook, String... sheetNames) {
+		Map<String, Table> retVal = new TreeMap<String, Table>();
 		for (String sheetName : sheetNames) {
 			System.out.println("#" + sheetName);
 			XSSFSheet sheet = workbook.getSheet(sheetName);
 			Table table = sheet2table(sheet);
 			if (table != null && table.validate()) {
-				retVal.add(table);
+				retVal.put(table.getCode(), table);
 			}
 		}
 		return retVal;
 	}
 
-	protected List<Table> xlsx2table(XSSFWorkbook workbook) {
-		List<Table> retVal = new ArrayList<>();
+	protected Map<String, Table> xlsx2table(XSSFWorkbook workbook) {
+		Map<String, Table> retVal = new TreeMap<String, Table>();
 		for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
 			XSSFSheet sheet = workbook.getSheetAt(i);
 
@@ -68,7 +70,7 @@ public class ExcelParser {
 
 			Table table = sheet2table(sheet);
 			if (table != null && table.validate()) {
-				retVal.add(table);
+				retVal.put(table.getCode(), table);
 			}
 		}
 		return retVal;
@@ -166,9 +168,9 @@ public class ExcelParser {
 		}
 	}
 
-	public String combineSql(List<Table> tables) {
+	public String combineSql(Map<String, Table> tables) {
 		StringBuilder sb = new StringBuilder();
-		for (Table table : tables) {
+		for (Table table : tables.values()) {
 			String sql = table.createSqlClause();
 			sb.append(sql).append(Constants.NEW_LINE);
 		}
@@ -182,6 +184,23 @@ public class ExcelParser {
 
 	public void executeSql(String content, boolean execute) {
 		new SqlScriptRunner().runScript(new StringReader(content));
+	}
+
+	public void execute(Context context) throws IOException, InvalidFormatException {
+		Map<String, Table> tables = xlsx2table(context.getExcelFile(), context.getSheetNames());
+
+		String script = combineSql(tables);
+
+		if (context.isScriptSave()) {
+			saveScript(context.getScriptFile(), script, context.isScriptSave());
+		}
+		if (context.isExecuteSql()) {
+			executeSql(script, context.isExecuteSql());
+		}
+
+		for (Table table : tables.values()) {
+			System.out.println(table.getXmlElement());
+		}
 	}
 
 }
