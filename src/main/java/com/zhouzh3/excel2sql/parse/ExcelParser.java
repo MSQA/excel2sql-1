@@ -182,8 +182,10 @@ public class ExcelParser {
 		FileUtil.save2file(fileName, script);
 	}
 
-	public void executeSql(String content, boolean execute) {
-		new SqlScriptRunner().runScript(new StringReader(content));
+	public void executeSql(Context context, String content) {
+		if (context.isExecuteSql()) {
+			new SqlScriptRunner().runScript(context.getJdbcContext(), new StringReader(content));
+		}
 	}
 
 	public void execute(Context context) throws IOException, InvalidFormatException {
@@ -195,7 +197,7 @@ public class ExcelParser {
 			saveScript(context.getScriptFile(), script, context.isScriptSave());
 		}
 		if (context.isExecuteSql()) {
-			executeSql(script, context.isExecuteSql());
+			executeSql(context, script);
 		}
 
 		for (Table table : tables.values()) {

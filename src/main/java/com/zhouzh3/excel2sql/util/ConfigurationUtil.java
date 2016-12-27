@@ -11,8 +11,8 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.builder.fluent.PropertiesBuilderParameters;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 
-import com.zhouzh3.excel2sql.model.Constants;
 import com.zhouzh3.excel2sql.model.Context;
+import com.zhouzh3.excel2sql.model.JdbcContext;
 
 public class ConfigurationUtil {
 
@@ -62,11 +62,18 @@ public class ConfigurationUtil {
 		// 是否执行脚本
 		context.setExecuteSql(configuration.getBoolean("execute.sql", true));
 
+		String jdbcDriver = configuration.getString("jdbc.driver");
+		String jdbcUrl = configuration.getString("jdbc.url");
+		String jdbcUser = configuration.getString("jdbc.username");
+		String jdbcPassword = configuration.getString("jdbc.password");
+
+		JdbcContext jdbcContext = new JdbcContext(jdbcDriver, jdbcUrl, jdbcUser, jdbcPassword);
+		context.setJdbcContext(jdbcContext);
+
 		return context;
 	}
 
-	public static Context getContext() {
-		Configuration configuration = buildConfiguration(Constants.FILE_EXCEL2SQL);
-		return getContext(configuration);
+	public static Context getContext(String... fileNames) {
+		return getContext(buildConfiguration(fileNames));
 	}
 }

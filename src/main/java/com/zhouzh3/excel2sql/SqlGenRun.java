@@ -11,9 +11,8 @@ import com.zhouzh3.excel2sql.util.ConfigurationUtil;
 public class SqlGenRun {
 
 	public static void main(String[] args) throws IOException, InvalidFormatException {
-		Context context = ConfigurationUtil.getContext();
+		Context context = ConfigurationUtil.getContext("conf/excel2sql.properties", "conf/jdbc.properties");
 
-		ExcelParser excelParser = new ExcelParser();
-		excelParser.execute(context);
+		new ExcelParser().execute(context);
 	}
 }

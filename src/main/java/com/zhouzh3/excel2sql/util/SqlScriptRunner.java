@@ -13,6 +13,8 @@ import java.sql.SQLException;
 
 import org.apache.ibatis.jdbc.ScriptRunner;
 
+import com.zhouzh3.excel2sql.model.JdbcContext;
+
 /**
  *
  * @author Dhinakaran Pragasam
@@ -25,7 +27,7 @@ public class SqlScriptRunner {
 	public void runScript(String scriptFilePath) {
 		try {
 			InputStreamReader in = new InputStreamReader(new FileInputStream(scriptFilePath), "UTF-8");
-			runScript(in);
+			runScript(null, in);
 		} catch (UnsupportedEncodingException | FileNotFoundException | RuntimeException e) {
 			System.err.println("Failed to Execute" + scriptFilePath + " The error is " + e.getMessage());
 			throw new RuntimeException(e);
@@ -33,10 +35,10 @@ public class SqlScriptRunner {
 
 	}
 
-	public void runScript(Reader in) {
+	public void runScript(JdbcContext jdbcContext, Reader in) {
 		ScriptRunner sr = null;
 		try {
-			Connection connection = ConnectFactory.getConnection();
+			Connection connection = ConnectFactory.getConnection(jdbcContext);
 			sr = new ScriptRunner(connection);
 			sr.runScript(new BufferedReader(in));
 			sr.setLogWriter(new PrintWriter(System.out));
@@ -62,7 +64,7 @@ public class SqlScriptRunner {
 		// String scriptFilePath = "src/main/resources/script.sql";
 		// sqlScriptRunner.runScript(scriptFilePath);
 
-		runner.runScript(new StringReader("DROP TABLE IF EXISTS T_URM_ORG_TREE_HIS;"));
+		runner.runScript(null, new StringReader("DROP TABLE IF EXISTS T_URM_ORG_TREE_HIS;"));
 
 	}
 }

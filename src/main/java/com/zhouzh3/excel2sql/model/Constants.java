@@ -12,8 +12,4 @@ public interface Constants {
 
 	public static String COMMA = ",";
 
-	public String FILE_JDBC = "conf/jdbc.properties";
-
-	public String FILE_EXCEL2SQL = "conf/excel2sql.properties";
-
 }
