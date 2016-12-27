@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.apache.log4j.Logger;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
@@ -189,7 +190,9 @@ public class ExcelParser {
 	}
 
 	public void execute(Context context) throws IOException, InvalidFormatException {
-		Map<String, Table> tables = xlsx2table(context.getExcelFile(), context.getSheetNames());
+		File excelFile = context.getExcelFile();
+		Logger.getLogger(ExcelParser.class).debug("ExcelFile :" + excelFile);
+		Map<String, Table> tables = xlsx2table(excelFile, context.getSheetNames());
 
 		String script = combineSql(tables);
 

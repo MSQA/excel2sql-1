@@ -29,8 +29,7 @@ public class FileUtil {
 	}
 
 	public static URL getResource(String fileName) {
-		ClassLoader classLoader = FileUtil.class.getClassLoader();
-		return classLoader.getResource(fileName);
+		return FileUtil.class.getClassLoader().getResource(fileName);
 	}
 
 	public static File getFile(String fileName) {

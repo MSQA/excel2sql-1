@@ -1,10 +1,7 @@
 package com.zhouzh3.excel2sql.util;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import org.apache.commons.configuration2.CompositeConfiguration;
 import org.apache.commons.configuration2.Configuration;
-import org.apache.commons.configuration2.FileBasedConfiguration;
 import org.apache.commons.configuration2.PropertiesConfiguration;
 import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
 import org.apache.commons.configuration2.builder.fluent.Parameters;
@@ -19,22 +16,23 @@ public class ConfigurationUtil {
 	private ConfigurationUtil() {
 	}
 
-	public static Configuration buildConfiguration(String... fileNames) {
-		FileBasedConfigurationBuilder<FileBasedConfiguration> builder = new FileBasedConfigurationBuilder<FileBasedConfiguration>(
-				PropertiesConfiguration.class).configure(getParameters(fileNames));
+	public static Configuration buildConfiguration2(String... fileNames) throws ConfigurationException {
+		CompositeConfiguration composite = new CompositeConfiguration();
+		for (String fileName : fileNames) {
+			composite.addConfiguration(buildConfiguration(fileName));
+		}
+		return composite;
+	}
+
+	public static Configuration buildConfiguration(String fileName) {
+		FileBasedConfigurationBuilder<PropertiesConfiguration> builder = new FileBasedConfigurationBuilder<PropertiesConfiguration>(
+				PropertiesConfiguration.class);
+		builder.configure(getParameters(fileName));
 		try {
 			return builder.getConfiguration();
 		} catch (ConfigurationException cex) {
 			throw new RuntimeException("加载配置文件失败:" + cex.getMessage(), cex);
 		}
-	}
-
-	protected static PropertiesBuilderParameters[] getParameters(String... fileNames) {
-		List<PropertiesBuilderParameters> answer = new ArrayList<PropertiesBuilderParameters>();
-		for (String fileName : fileNames) {
-			answer.add(getParameters(fileName));
-		}
-		return answer.toArray(new PropertiesBuilderParameters[answer.size()]);
 	}
 
 	protected static PropertiesBuilderParameters getParameters(String fileName) {
@@ -47,7 +45,8 @@ public class ConfigurationUtil {
 	public static Context getContext(Configuration configuration) {
 		Context context = new Context();
 		// 需要刷新的表
-		context.setExcelFile(FileUtil.getFile(configuration.getString("excel.file")));
+		String string = configuration.getString("excel.file");
+		context.setExcelFile(FileUtil.getFile(string));
 		String line = configuration.getString("sheet.names");
 		if (!StringUtil.isBlank(line)) {
 			context.setSheetNames(line.trim().split("[, ]+"));
@@ -73,7 +72,9 @@ public class ConfigurationUtil {
 		return context;
 	}
 
-	public static Context getContext(String... fileNames) {
-		return getContext(buildConfiguration(fileNames));
+	public static Context getContext(String... fileNames) throws ConfigurationException {
+		Configuration configuration = buildConfiguration2(fileNames);
+
+		return getContext(configuration);
 	}
 }
