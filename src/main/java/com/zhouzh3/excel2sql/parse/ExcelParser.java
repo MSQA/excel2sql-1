@@ -18,7 +18,7 @@ import com.zhouzh3.excel2sql.model.Constants;
 import com.zhouzh3.excel2sql.model.Context;
 import com.zhouzh3.excel2sql.model.Table;
 import com.zhouzh3.excel2sql.util.FileUtil;
-import com.zhouzh3.excel2sql.util.SqlScriptRunner;
+import com.zhouzh3.excel2sql.util.ScriptRunnerUtil;
 import com.zhouzh3.excel2sql.util.StringUtil;
 
 public class ExcelParser {
@@ -185,7 +185,7 @@ public class ExcelParser {
 
 	public void executeSql(Context context, String content) {
 		if (context.isExecuteSql()) {
-			new SqlScriptRunner().runScript(context.getJdbcContext(), new StringReader(content));
+			ScriptRunnerUtil.runScript(context.getDataSource(), new StringReader(content));
 		}
 	}
 

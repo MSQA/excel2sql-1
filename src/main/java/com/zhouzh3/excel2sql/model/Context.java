@@ -10,7 +10,7 @@ public class Context {
 	private String scriptFile;
 	private boolean executeSql;
 
-	private JdbcContext jdbcContext;
+	private DataSource dataSource;
 
 	public File getExcelFile() {
 		return excelFile;
@@ -52,12 +52,12 @@ public class Context {
 		this.executeSql = executeSql;
 	}
 
-	public JdbcContext getJdbcContext() {
-		return jdbcContext;
+	public DataSource getDataSource() {
+		return dataSource;
 	}
 
-	public void setJdbcContext(JdbcContext jdbcContext) {
-		this.jdbcContext = jdbcContext;
+	public void setDataSource(DataSource jdbcContext) {
+		this.dataSource = jdbcContext;
 	}
 
 	@Override

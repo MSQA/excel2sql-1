@@ -1,12 +1,16 @@
 package com.zhouzh3.excel2sql.model;
 
-public class JdbcContext {
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DataSource {
 	private String jdbcDriver;
 	private String jdbcUrl;
 	private String jdbcUser;
 	private String jdbcPassword;
 
-	public JdbcContext(String jdbcDriver, String jdbcUrl, String jdbcUser, String jdbcPassword) {
+	public DataSource(String jdbcDriver, String jdbcUrl, String jdbcUser, String jdbcPassword) {
 		this.jdbcDriver = jdbcDriver;
 		this.jdbcUrl = jdbcUrl;
 		this.jdbcUser = jdbcUser;
@@ -37,12 +41,22 @@ public class JdbcContext {
 		this.jdbcUser = jdbcUser;
 	}
 
-	public String getJdbcPassword() {
+	private String getJdbcPassword() {
 		return jdbcPassword;
 	}
 
 	public void setJdbcPassword(String jdbcPassword) {
 		this.jdbcPassword = jdbcPassword;
+	}
+
+	public Connection getConnection() throws SQLException {
+		try {
+			Class.forName(getJdbcDriver());
+		} catch (ClassNotFoundException e) {
+			System.err.println(e.getMessage());
+			throw new RuntimeException(e);
+		}
+		return DriverManager.getConnection(getJdbcUrl(), getJdbcUser(), getJdbcPassword());
 	}
 
 }

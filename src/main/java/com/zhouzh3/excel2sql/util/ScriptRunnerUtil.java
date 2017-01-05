@@ -13,32 +13,21 @@ import java.sql.SQLException;
 
 import org.apache.ibatis.jdbc.ScriptRunner;
 
-import com.zhouzh3.excel2sql.model.JdbcContext;
+import com.zhouzh3.excel2sql.model.DataSource;
 
 /**
  *
  * @author Dhinakaran Pragasam
  */
-public class SqlScriptRunner {
+public class ScriptRunnerUtil {
 
-	public SqlScriptRunner() {
+	private ScriptRunnerUtil() {
 	}
 
-	public void runScript(String scriptFilePath) {
-		try {
-			InputStreamReader in = new InputStreamReader(new FileInputStream(scriptFilePath), "UTF-8");
-			runScript(null, in);
-		} catch (UnsupportedEncodingException | FileNotFoundException | RuntimeException e) {
-			System.err.println("Failed to Execute" + scriptFilePath + " The error is " + e.getMessage());
-			throw new RuntimeException(e);
-		}
-
-	}
-
-	public void runScript(JdbcContext jdbcContext, Reader in) {
+	public static void runScript(DataSource jdbcContext, Reader in) {
 		ScriptRunner sr = null;
 		try {
-			Connection connection = ConnectFactory.getConnection(jdbcContext);
+			Connection connection = jdbcContext.getConnection();
 			sr = new ScriptRunner(connection);
 			sr.runScript(new BufferedReader(in));
 			sr.setLogWriter(new PrintWriter(System.out));
@@ -59,12 +48,6 @@ public class SqlScriptRunner {
 	 *            the command line arguments
 	 */
 	public static void main(String[] args) throws ClassNotFoundException, SQLException {
-		SqlScriptRunner runner = new SqlScriptRunner();
-
-		// String scriptFilePath = "src/main/resources/script.sql";
-		// sqlScriptRunner.runScript(scriptFilePath);
-
-		runner.runScript(null, new StringReader("DROP TABLE IF EXISTS T_URM_ORG_TREE_HIS;"));
-
+		runScript(null, new StringReader("DROP TABLE IF EXISTS T_URM_ORG_TREE_HIS;"));
 	}
 }

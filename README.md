@@ -8,14 +8,14 @@
 ## 2. 配置excel2sql.properties ##
 
     \#直接执行脚本
-    execute.script=true
+    execute.sql=true
     
     \#保存SQL脚本
-    save.script=true
-    script.filename=src/main/resources/generate/script.sql
+    script.save=true
+    script.file=src/main/resources/generate/script.sql
     
     \#excel文件
-    excel.filename=sample.xlsx
+    excel.file=sample.xlsx
     sheet.names=员工表
 
 
