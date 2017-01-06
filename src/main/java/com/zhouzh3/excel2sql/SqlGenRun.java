@@ -17,9 +17,9 @@ public class SqlGenRun {
 
 		// String[] files = new String[] { "conf/urm-jdbc.properties",
 		// "conf/urm-app.properties", };
-		
+
 		String[] files = new String[] { "conf/apc-jdbc.properties", "conf/apc-app.properties", };
-		
+
 		Context context = ContextParser.parseContext(files);
 		new ExcelParser().execute(context);
 	}
