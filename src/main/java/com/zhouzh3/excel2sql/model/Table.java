@@ -7,6 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+
+import com.zhouzh3.excel2sql.util.FileUtil;
 import com.zhouzh3.excel2sql.util.JavaBeansUtil;
 import com.zhouzh3.excel2sql.util.StringUtil;
 
@@ -16,13 +22,19 @@ public class Table extends Data implements Comparable<Table> {
 
 	private List<Column> columns;
 
+	protected static org.apache.log4j.Logger logger = org.apache.log4j.Logger.getLogger(Table.class);
+
 	public Table() {
 		super();
 		this.columns = new ArrayList<>();
 	}
 
 	public void addColumn(Column col) {
-		this.columns.add(col);
+		columns.add(col);
+	}
+
+	public void addColumns(List<Column> columns) {
+		this.columns.addAll(columns);
 	}
 
 	public boolean hasPrimary() {
@@ -58,10 +70,8 @@ public class Table extends Data implements Comparable<Table> {
 
 		sb.append("/*==============================================================*/").append(Constants.NEW_LINE);
 		sb.append(String.format("/* Table: %-54s*/", code)).append(Constants.NEW_LINE);
-
 		sb.append("/*==============================================================*/").append(Constants.NEW_LINE);
 		sb.append(String.format("DROP TABLE IF EXISTS %s;", code)).append(Constants.NEW_LINE);
-
 		sb.append(MessageFormat.format("create table {0}  ( ", code)).append(Constants.NEW_LINE);
 
 		for (int i = 0; i < columns.size(); i++) {
@@ -69,7 +79,6 @@ public class Table extends Data implements Comparable<Table> {
 			if (i != 0) {
 				appendSeparetor(sb);
 			}
-
 			sb.append(column.createSqlClause());
 		}
 
@@ -80,19 +89,53 @@ public class Table extends Data implements Comparable<Table> {
 		sb.append(Constants.NEW_LINE).append(");").append(Constants.NEW_LINE).append(Constants.NEW_LINE);
 
 		//
-		if (StringUtil.isNotBlank(name)) {
-			sb.append(MessageFormat.format("alter table {0} comment ''{1}'';", code, name))
+		if (StringUtil.isNotBlank(FileUtil.fileName(name))) {
+			sb.append(MessageFormat.format("alter table {0} comment ''{1}'';", code, FileUtil.fileName(name)))
 					.append(Constants.NEW_LINE);
 		}
 		return sb.toString();
+	}
+
+	public void createSheet(XSSFWorkbook workbook) {
+		String sheetName = getSheetName(workbook, name, code);
+		logger.info("sheetName: " + sheetName);
+		XSSFSheet sheet = workbook.createSheet(sheetName);
+		int rownum = 0;
+		initSheetHeader(sheet.createRow(rownum++));
+		for (Column column : columns) {
+			XSSFRow row = sheet.createRow(rownum++);
+			if (rownum == 2) {// 第二行，增加表名
+				row.createCell(0).setCellValue(code);
+			}
+			column.createRow(row);
+		}
+	}
+
+	private String getSheetName(XSSFWorkbook workbook, String tableName, String tableCode) {
+		String sheetName = FileUtil.fileName(name);
+		if (StringUtil.isBlank(sheetName)) {
+			return tableCode;
+		}
+
+		int i = 1;
+		while (workbook.getSheet(sheetName) != null) {
+			sheetName = sheetName + "(" + i + ")";
+			i++;
+		}
+		return sheetName;
+	}
+
+	private void initSheetHeader(XSSFRow row) {
+		for (int i = 0; i < Constants.COLUMN_NAMES.length; i++) {
+			XSSFCell cell = row.createCell(i);
+			cell.setCellValue(Constants.COLUMN_NAMES[i]);
+		}
 	}
 
 	private void appendSeparetor(StringBuilder sb) {
 		appendComma(sb);
 		appendNewLine(sb);
 	}
-
-	
 
 	private void appendComma(StringBuilder sb) {
 		sb.append(Constants.COMMA);
@@ -135,7 +178,8 @@ public class Table extends Data implements Comparable<Table> {
 
 	@Override
 	public String toString() {
-		return "Table [name=" + name + ", code=" + code + ", comment=" + comment + ", columns=" + columns + "]";
+		return "Table [name=" + FileUtil.fileName(name) + ", code=" + code + ", comment=" + comment + ", columns="
+				+ columns + "]";
 	}
 
 }

@@ -16,6 +16,6 @@
 		</environment>
 	</environments>
 	<mappers>
-		<mapper class="com.zhouzh3.excel2sql.mapper.MetadataMapper" />
+		<mapper class="com.zhouzh3.excel2sql.mapper.MySqlMapper" />
 	</mappers>
 </configuration>

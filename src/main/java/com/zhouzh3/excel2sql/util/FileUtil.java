@@ -50,4 +50,11 @@ public class FileUtil {
 		throw new RuntimeException("打开文件" + fileName + "失败");
 	}
 
+	public static String fileName(String name) {
+		if (name == null) {
+			return null;
+		}
+		return name.replaceAll("[/?():，]*", "");
+	}
+
 }

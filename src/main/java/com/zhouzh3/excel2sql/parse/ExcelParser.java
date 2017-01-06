@@ -23,7 +23,7 @@ import com.zhouzh3.excel2sql.util.StringUtil;
 
 public class ExcelParser {
 
-	public Map<String, Table> xlsx2table(File xlsxPath, String... sheetNames)
+	private Map<String, Table> xlsx2table(File xlsxPath, String... sheetNames)
 			throws IOException, InvalidFormatException {
 		XSSFWorkbook workbook = null;
 		try {
@@ -130,7 +130,7 @@ public class ExcelParser {
 		return false;
 	}
 
-	public void populate(Table table, Column column, String property, XSSFCell cell) {
+	private void populate(Table table, Column column, String property, XSSFCell cell) {
 		if (cell != null) {
 			String stringCellValue = cell.getStringCellValue();
 			if (StringUtil.isNotBlank(stringCellValue)) {
@@ -139,7 +139,7 @@ public class ExcelParser {
 		}
 	}
 
-	public void populate(Table table, Column column, String property, String cellValue) {
+	private void populate(Table table, Column column, String property, String cellValue) {
 		switch (property) {
 		case "TABLE":
 			if (StringUtil.isBlank(table.getCode())) {
@@ -169,7 +169,7 @@ public class ExcelParser {
 		}
 	}
 
-	public String combineSql(Map<String, Table> tables) {
+	private String combineSql(Map<String, Table> tables) {
 		StringBuilder sb = new StringBuilder();
 		for (Table table : tables.values()) {
 			String sql = table.createSqlClause();
@@ -179,11 +179,11 @@ public class ExcelParser {
 		return sb.toString();
 	}
 
-	public void saveScript(String fileName, String script, boolean saveFile) throws IOException {
+	private void saveScript(String fileName, String script, boolean saveFile) throws IOException {
 		FileUtil.save2file(fileName, script);
 	}
 
-	public void executeSql(Context context, String content) {
+	private void executeSql(Context context, String content) {
 		if (context.isExecuteSql()) {
 			ScriptRunnerUtil.runScript(context.getDataSource(), new StringReader(content));
 		}

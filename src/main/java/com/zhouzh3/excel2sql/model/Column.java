@@ -2,6 +2,8 @@ package com.zhouzh3.excel2sql.model;
 
 import java.text.MessageFormat;
 
+import org.apache.poi.xssf.usermodel.XSSFRow;
+
 import com.zhouzh3.excel2sql.util.StringUtil;
 
 public class Column extends Data {
@@ -42,6 +44,10 @@ public class Column extends Data {
 		return notNull;
 	}
 
+	public void setIsNotNull(boolean notNull) {
+		setNotNull(notNull);
+	}
+
 	public void setNotNull(boolean notNull) {
 		this.notNull = notNull;
 	}
@@ -79,7 +85,18 @@ public class Column extends Data {
 
 	@Override
 	public String toString() {
-		return "Column [datatype=" + datatype + ", primary=" + primary + "]";
+		return "Column [datatype=" + datatype + ", primary=" + primary + ", notNull=" + notNull + ", name=" + name
+				+ ", code=" + code + ", comment=" + comment + "]";
+	}
+
+	public void createRow(XSSFRow row) {
+		// 分组编号 APPGRP_ID varchar(32) Y
+		int columnIndex = 1;
+		row.createCell(columnIndex++).setCellValue(name);
+		row.createCell(columnIndex++).setCellValue(code);
+		row.createCell(columnIndex++).setCellValue(datatype);
+		row.createCell(columnIndex++);
+		row.createCell(columnIndex++).setCellValue(comment);
 	}
 
 }

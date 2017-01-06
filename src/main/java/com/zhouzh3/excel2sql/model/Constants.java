@@ -2,7 +2,7 @@ package com.zhouzh3.excel2sql.model;
 
 public interface Constants {
 
-	public static String[] COLUMN_NAMES = { "TABLE", "NAME", "CODE", "DATATYPE", "NOTNULL", "COMMENT" };
+	public static String[] COLUMN_NAMES = { "Table", "Name", "Code", "Datatype", "NotNull", "Comment", };
 
 	public static int FIRST_ROW = 1;
 
